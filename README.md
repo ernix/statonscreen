@@ -19,7 +19,6 @@ use warnings;
 use strict;
 
 use Filesys::Notify::Simple;
-use Cwd 'realpath';
 
 my $watcher = Filesys::Notify::Simple->new([ "." ]);
 

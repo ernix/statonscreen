@@ -6,7 +6,7 @@ screen hardstatusline indicator for testing
 DESCRIPTION
 -----------
 
-`statonscree` assumes that you use `gnu screen` and turn on hardstatus line, 
+`statonscreen` assumes that you use `gnu screen` and turn on hardstatus line, 
 the default format line is ``%`%-w%{=b kw}%n %t%{-}%+w``.
 
 USAGE

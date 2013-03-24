@@ -1,0 +1,71 @@
+#!/bin/sh
+# show test result on your screen status.
+
+SCRIPT_NAME=$(basename "$0")
+USAGE="\
+$SCRIPT_NAME [-h|--help] [-c|--clear] [-e|--eval <command>]
+
+DESCRIPTION
+	Show some notification sign on screen's hardstatus line based on an
+	evaluated command's return value.
+
+OPTIONS
+	-e|--eval <command>		execute <command>
+	-c|--clear				clear screen hardstatus line
+	-h|--help				show this help message
+"
+
+default_hs_format='%`%-w%{=b kw}%n %t%{-}%+w'
+sign_pass='%{=b gw} PASS %{-}'
+sign_fail='%{=b rw} FAIL %{-}'
+sign_test='%{=bB bw} TEST %{-}'
+
+usage () {
+	echo "usage: $USAGE"
+	exit 1
+}
+
+update_hs () {
+	hs_string=$(echo "$1" | sed "s/'/\\\\'/")
+	screen -X eval "hardstatus alwayslastline '$hs_string'"
+}
+
+reset_hs () {
+	update_hs "$default_hs_format"
+	exit 0
+}
+
+show_with_padding () {
+	case "$1" in
+		--pass) sign="$sign_pass" ;;
+		--fail) sign="$sign_fail" ;;
+		--test) sign="$sign_test" ;;
+		*) sign= ;;
+	esac
+	update_hs "$default_hs_format %= $sign"
+}
+
+while [ $# != 0 ]
+do
+	case "$1" in
+	-h|--help)
+		usage
+		;;
+	-c|--clear)
+		reset_hs
+		;;
+	-e|--eval)
+		cmd="$2"; shift
+		;;
+	*)
+		usage
+		;;
+	esac
+	shift
+done
+
+[ -z "$cmd" ] && usage
+
+show_with_padding --test
+eval "$cmd" && show_with_padding --pass \
+		    || show_with_padding --fail
